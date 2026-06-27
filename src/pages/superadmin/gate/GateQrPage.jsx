@@ -13,7 +13,7 @@ const url = api.geturl(api.MODULE.GATE, api.OPERATIONS.GETDATA);
 
 
 
-const backendUrl = 'http://localhost:4000';
+const backendUrl = 'https://hrms-project-backend-gijz.onrender.com';
 
 function GateQrPage({ pageTitle, gateIndex }) {
   const navigate = useNavigate();

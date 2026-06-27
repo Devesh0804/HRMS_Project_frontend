@@ -47,7 +47,7 @@ const SuperAdminNavbar = ({ onLogout }) => {
     const token = localStorage.getItem('token');
 
     try {
-      await fetch('http://localhost:4000/hrms/authentication/logout', {
+      await fetch('https://hrms-project-backend-gijz.onrender.com/hrms/authentication/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

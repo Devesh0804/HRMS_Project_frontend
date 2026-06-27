@@ -5,7 +5,7 @@ const BaseAPIcaller = ()=>{
    
 
 
-        const BaseRoute="http://localhost:4000/hrms/";
+        const BaseRoute="https://hrms-project-backend-gijz.onrender.com/hrms/";
 
        const MODULE={
          ROLE:"role",

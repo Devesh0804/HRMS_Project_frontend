@@ -71,7 +71,7 @@ const ViewEmployee = () => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
         const token = localStorage.getItem('token');
-        await fetch(`http://localhost:4000/hrms/user/deleteById/${id}`, {
+        await fetch(`https://hrms-project-backend-gijz.onrender.com/hrms/user/deleteById/${id}`, {
           method: 'DELETE',
           headers: {
             ...(token ? { Authorization: `Bearer ${token}` } : {})

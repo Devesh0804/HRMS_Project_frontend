@@ -138,14 +138,14 @@ const AttendanceButton = () => {
        const token = localStorage.getItem('token');
         const decoded = jwtDecode(token)
 
-      const res = await fetch('http://localhost:4000/hrms/attendence/check-attendence',{
+      const res = await fetch('https://hrms-project-backend-gijz.onrender.com/hrms/attendence/check-attendence',{
         method :'GET',    headers:{
            'Content-Type':'application/json',
            ...(token ? { Authorization: `Bearer ${token}` } : {})
         }
       })
       const response = await res.json()
-      console.log();
+      // console.log();
             
       
     } catch (error) {
