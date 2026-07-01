@@ -67,6 +67,7 @@ const ViewEmployee = () => {
     navigate(`/superadmin/employee/edit/${id}`, { state: { employee: employee?.details } });
   };
 
+  //http://localhost:4000/hrms/user/deleteById/${id}
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {

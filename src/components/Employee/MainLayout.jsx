@@ -36,6 +36,10 @@ const MainLayout = ({ children }) => {
     });
   }, [navigate]);
 
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
   const handleLogout = () => {
     // Remove stored JWT token and attendance state when employee logs out
     const token = localStorage.getItem('token');
@@ -63,7 +67,7 @@ const MainLayout = ({ children }) => {
     { path: '/employee/qr-scanner', label: 'QR Scanner', icon: 'qr' },
     { path: '/employee/leave', label: 'Leave Requests', icon: 'leave' },
     { path: '/employee/payroll', label: 'Payroll', icon: 'payroll' }
-    
+
   ];
 
   const getIcon = (iconType) => {
@@ -117,21 +121,20 @@ const MainLayout = ({ children }) => {
   };
 
   return (
-    <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50 w-full shrink-0">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4">
+    <div className="flex h-screen flex-col overflow-hidden bg-gray-100">
+      <header className="sticky top-0 z-50 w-full shrink-0 border-b border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
-              onClick={() => setSidebarOpen(prev => !prev)}
-              className="text-gray-600 hover:text-gray-900 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              className="rounded-md p-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 lg:hidden"
               aria-label="Toggle sidebar"
             >
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-indigo-600">HRMS - Employee Portal</h1>
+            <h1 className="text-lg font-bold text-indigo-600 sm:text-xl">HRMS - Employee Portal</h1>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <Link
@@ -142,10 +145,10 @@ const MainLayout = ({ children }) => {
             >
               {getIcon('qr')}
             </Link>
-            <span className="text-gray-700 text-sm sm:text-base hidden sm:block">{employeeData.username}</span>
+            <span className="hidden text-sm text-gray-700 sm:block">{employeeData.username}</span>
             <button
               onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition text-sm sm:text-base"
+              className="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-700 sm:px-4 sm:text-base"
             >
               Logout
             </button>
@@ -153,30 +156,50 @@ const MainLayout = ({ children }) => {
         </div>
       </header>
 
-      {/* Main Container */}
-      <div className="flex flex-1 relative min-h-0">
-        {/* Mobile Overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
+      <div className="flex min-h-0 flex-1">
+        {
+          sidebarOpen && (
+            <div
+              className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+            ></div>
 
-        {/* Sidebar */}
+          )}
+
+
+
         <aside
-          className={`bg-indigo-900 text-white transition-all duration-300 transform overflow-hidden ${
-            sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-0'
-          } fixed top-16 left-0 z-40 bottom-0 lg:translate-x-0 lg:w-64 lg:sticky lg:top-0 lg:left-auto lg:bottom-auto lg:z-0 lg:h-full`}
+
+          className={`
+                         fixed
+                         top-0
+                         left-0
+                         z-40
+                         h-screen
+                         w-64
+                         bg-indigo-900
+                         pt-24
+                         transform
+                         transition-transform
+                         duration-300
+                         ease-in-out
+                         
+                         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+                         
+                         lg:static
+                         lg:h-auto
+                         lg:translate-x-0
+                         lg:pt-0
+                         `}
+
         >
-          <nav className="p-4 sm:p-6 h-full overflow-y-auto">
-            {/* Close button for mobile */}
+          <nav className="h-full overflow-y-auto p-4 sm:p-6">
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden w-full text-right mb-4 text-white hover:text-gray-300 focus:outline-none"
+              className="mb-4 ml-auto flex w-full justify-end text-white hover:text-gray-300 focus:outline-none lg:hidden"
               aria-label="Close sidebar"
             >
-              <svg className="w-6 h-6 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="ml-auto h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -185,11 +208,10 @@ const MainLayout = ({ children }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
-                    location.pathname === item.path
+                  className={`flex items-center gap-3 rounded-lg px-4 py-3 transition ${location.pathname === item.path
                       ? 'bg-indigo-700 text-white'
-                      : 'hover:bg-indigo-800 text-gray-100'
-                  }`}
+                      : 'text-gray-100 hover:bg-indigo-800'
+                    }`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   {getIcon(item.icon)}
@@ -200,8 +222,7 @@ const MainLayout = ({ children }) => {
           </nav>
         </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 min-h-0 p-4 sm:p-6 lg:p-8 w-full overflow-y-auto relative z-0">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>

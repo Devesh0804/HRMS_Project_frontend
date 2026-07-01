@@ -13,8 +13,19 @@ const url = api.geturl(api.MODULE.USER, api.OPERATIONS.SAVE)
 
 const city_url = api.geturl(api.MODULE.ADDRESS,api.OPERATIONS.GETDATA)
 let token = localStorage.getItem('token')
-       
 
+
+       
+  // const response = await fetch(url, {
+  //       method: "POST",
+  //      headers:{
+  //           'Content-Type': 'application/json',
+  //           Authorization: `Bearer ${token}`
+  //       },
+  //       // body: JSON.stringify(submittedData)
+  //     })
+  //     const message = await handleApiResponse(response);
+  //     console.log(message);
 
 
 
@@ -137,20 +148,18 @@ const EmployeeForm = ({
   const handleFileChange = (event) => {
     const { name, files } = event.target;
 
-
-  //  console.log(files);
-   
-       if (name.includes(".")) {
-      const [parent, child] = name.split(".");
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
 
       setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent],
-          [child]: files && files[0] ? files[0].name : null,
+          [child]: files && files[0] ? files[0] : null,
         },
       }));
-    } 
+    }
+
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -204,8 +213,8 @@ const EmployeeForm = ({
 
     if (!formData.gender) newErrors.gender = 'Gender is required.';
     if (!formData.DOB) newErrors.dateOfBirth = 'Date of birth is required.';
-    if (!formData.address.CityName) newErrors.city = 'City is required.';
-    if (!formData.address.StateName) newErrors.state = 'State is required.';
+    // if (!formData.address.CityName) newErrors.city = 'City is required.';
+    // if (!formData.address.StateName) newErrors.state = 'State is required.';
     // if (!formData.address.CountryName) newErrors.country = 'Country is required.';
     if (!formData.Documents.Marks_10th) newErrors.tenthDocument = '10th document is required.';
     if (!formData.Documents.Marks_12th) newErrors.twelfthDocument = '12th document is required.';
@@ -255,6 +264,28 @@ const EmployeeForm = ({
       updatedDateTime: currentTime
     };
 
+    const payload = {
+      ...submittedData,
+      Documents: {
+        Marks_10th: null,
+        Marks_12th: null,
+        UG_qualifications: null,
+        PG_qualifications: null
+      },
+      BankDetails: {
+        ...submittedData.BankDetails,
+        passbook_checkImg: null
+      }
+    };
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('payload', JSON.stringify(payload));
+    formDataToSend.append('Documents.Marks_10th', formData.Documents.Marks_10th || '');
+    formDataToSend.append('Documents.Marks_12th', formData.Documents.Marks_12th || '');
+    formDataToSend.append('Documents.UG_qualifications', formData.Documents.UG_qualifications || '');
+    formDataToSend.append('Documents.PG_qualifications', formData.Documents.PG_qualifications || '');
+    formDataToSend.append('BankDetails.passbook_checkImg', formData.BankDetails.passbook_checkImg || '');
+
     console.log(`${entityLabel} details saved locally:`);
 
     setSuccessMessage(`${entityLabel} details were captured successfully.`);
@@ -264,7 +295,9 @@ const EmployeeForm = ({
     } 
   
     setFormData(createInitialFormData(roleName));
-    console.log(formData);
+  
+  
+    
     
     try {
         
@@ -273,11 +306,10 @@ const EmployeeForm = ({
       // Without this header `req.body` may be undefined which causes destructure errors.
       const response = await fetch(url, {
         method: "POST",
-       headers:{
-            'Content-Type': 'application/json',
+        headers:{
             Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(submittedData)
+        body: formDataToSend
       })
       const message = await handleApiResponse(response);
       console.log(message);

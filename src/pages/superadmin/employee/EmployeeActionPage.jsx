@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import SuperAdminNavbar from '../../../components/SuperAdminNavbar';
 import handleApiResponse from '../../../utils/BaseApiResponse';
 import BaseAPIcaller from '../../../utils/BaseApicaller';
+import "./employeeAction.css"
+
 
 const emptyForm = {
   FullName: {
@@ -91,25 +93,25 @@ const personalFields = [
 ];
 
 const addressFields = [
-  { label: 'Country', name: 'address.CountryName' },
-  { label: 'State', name: 'address.StateName' },
-  { label: 'City', name: 'address.CityName' }
+  { label: 'Country', name: 'address.CountryName', type: 'text' },
+  { label: 'State', name: 'address.StateName' , type: 'text'},
+  { label: 'City', name: 'address.CityName' , type: 'text'}
 ];
 
 const documentFields = [
-  { label: '10th Document', name: 'Documents.Marks_10th' },
-  { label: '12th Document', name: 'Documents.Marks_12th' },
-  { label: 'UG Document', name: 'Documents.UG_qualifications' },
-  { label: 'PG Document', name: 'Documents.PG_qualifications' }
+  { label: '10th Document', name: 'Documents.Marks_10th', type: 'file'},
+  { label: '12th Document', name: 'Documents.Marks_12th', type: 'file'},
+  { label: 'UG Document', name: 'Documents.UG_qualifications',type: 'file' },
+  { label: 'PG Document', name: 'Documents.PG_qualifications',type: 'file' }
 ];
 
 const bankFields = [
-  { label: 'Bank Name', name: 'BankDetails.bankname' },
-  { label: 'IFSC Code', name: 'BankDetails.ifsccode' },
-  { label: 'Branch', name: 'BankDetails.branchName' },
-  { label: 'Account Number', name: 'BankDetails.acccountno' },
-  { label: 'Confirm Account Number', name: 'BankDetails.confirmAccountNumber' },
-  { label: 'Passbook Image', name: 'BankDetails.passbook_checkImg' }
+  { label: 'Bank Name', name: 'BankDetails.bankname', type: 'text' },
+  { label: 'IFSC Code', name: 'BankDetails.ifsccode', type: 'text' },
+  { label: 'Branch', name: 'BankDetails.branchName' , type: 'text'},
+  { label: 'Account Number', name: 'BankDetails.acccountno', type: 'text' },
+  { label: 'Confirm Account Number', name: 'BankDetails.confirmAccountNumber', type: 'text' },
+  { label: 'Passbook Image', name: 'BankDetails.passbook_checkImg' ,type: 'file'}
 ];
 
 function EmployeeActionPage({
@@ -123,6 +125,8 @@ function EmployeeActionPage({
 }) {
   const { id } = useParams();
   const location = useLocation();
+  // console.log(location);
+  
   
   const isViewMode = mode === 'view';
 
@@ -153,8 +157,10 @@ function EmployeeActionPage({
           }
         });
         const employees = await response.json();
+        // console.log(employees);
+        
           const employee = employees.find((item) => item._id === id);
-
+          
         if (employee) {
           const employeeFormData = makeFormData(employee, defaultRoleName);
           setFormData(employeeFormData);
@@ -257,13 +263,41 @@ function EmployeeActionPage({
 
   const inputClass = 'w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-slate-50 disabled:text-slate-600';
 
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const openImagePreview = (imageUrl) => {
+    if (imageUrl) {
+      setSelectedImage(imageUrl);
+    }
+  };
+
+  const closeImagePreview = () => setSelectedImage(null);
+
   const renderInput = (field) => (
-     
     
+    //  { label: 'First Name', name: 'FullName.firstName', type: 'text' }
+    // { label: '10th Document', name: 'Documents.Marks_10th' },
     <div key={field.name}>
-    
+     
       <label className="mb-2 block text-sm font-medium text-slate-700">{field.label}</label>
-      <input
+
+       {
+       field.type == 'file' ? 
+       
+       <img
+        src={getValue(field.name)}
+        alt=""
+        className="profile-image"
+        onClick={() => openImagePreview(getValue(field.name))}
+        style={{
+          width: "50px",
+          cursor: getValue(field.name) ? "pointer" : "default"
+        }}
+      />
+       
+       :
+       
+       <input
         type={ field.name == documentFields.map((field)=>(field)) ? 'file' : field.type }
         name={field.name}
         value={getValue(field.name)}
@@ -271,10 +305,15 @@ function EmployeeActionPage({
         disabled={isViewMode || field.name === 'department'}
         className={inputClass}
       />
-     
-    </div>
+       }
+       
+   
+      </div>
+
     
   );
+
+
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
@@ -396,8 +435,32 @@ function EmployeeActionPage({
           )}
         </section>
       </div>
+
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onClick={closeImagePreview}
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw] hover:cursor-alias:" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={closeImagePreview}
+              className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-1 text-lg font-semibold text-slate-800 shadow"
+            >
+              ×
+            </button>
+            <img
+              src={selectedImage}
+              alt="Preview"
+              className="max-h-[85vh] max-w-[85vw] rounded-lg object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+
 
 export default EmployeeActionPage;

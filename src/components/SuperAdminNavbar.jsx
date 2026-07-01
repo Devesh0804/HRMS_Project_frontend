@@ -184,36 +184,61 @@ const SuperAdminNavbar = ({ onLogout }) => {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              {superAdminNavigationGroups.map((group) =>
-                group.key === 'admin' || group.key === 'employee' || group.key === 'gate' ? (
-                  <Link
-                    key={group.key}
-                    to={
-                      group.key === 'admin'
-                        ? SUPERADMIN_ADMIN_ADD_PATH
-                        : group.key === 'employee'
-                          ? SUPERADMIN_EMPLOYEE_ADD_PATH
-                          : group.links[0].to
-                    }
-                    className="text-slate-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium text-left transition-colors"
-                  >
-                    {group.label}
-                  </Link>
-                ) : (
-                  <button
-                    key={group.key}
-                    type="button"
-                    className="text-slate-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium text-left transition-colors"
-                  >
-                    {group.label}
-                  </button>
-                )
-              )}
+            <div className="space-y-2">
+              {superAdminNavigationGroups.map((group) => {
+                const isOpen = openDropdown === group.key;
+                const isActive = group.links.some((link) => location.pathname === link.to);
+
+                return (
+                  <div key={group.key} className="rounded-lg border border-slate-200 bg-slate-50 dropdown">
+                    <button
+                      type="button"
+                      onClick={() => setOpenDropdown(isOpen ? null : group.key)}
+                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm font-medium transition-colors ${
+                        isActive ? 'text-indigo-600' : 'text-slate-600 hover:text-indigo-600'
+                      }`}
+                    >
+                      <span>{group.label}</span>
+                      <svg
+                        className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {isOpen && (
+                      <div className="border-t border-slate-200 bg-white px-2 py-2">
+                        {group.links.map((link) => {
+                          const isLinkActive = location.pathname === link.to;
+
+                          return (
+                            <Link
+                              key={link.to}
+                              to={link.to}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className={`block rounded-md px-3 py-2 text-sm ${
+                                isLinkActive
+                                  ? 'bg-slate-100 text-indigo-600'
+                                  : 'text-slate-700 hover:bg-slate-100'
+                              }`}
+                            >
+                              {link.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
 
               <Link
                 to={SUPERADMIN_RECRUITMENT_PATH}
-                className="text-slate-600 hover:text-indigo-600 px-3 py-2 text-sm font-medium text-left transition-colors flex items-center"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600"
               >
                 {recruitmentIcon}
                 Recruitment
