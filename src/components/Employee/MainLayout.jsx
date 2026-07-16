@@ -122,7 +122,7 @@ const MainLayout = ({ children }) => {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-gray-100">
-      <header className="sticky top-0 z-50 w-full shrink-0 border-b border-slate-200 bg-white shadow-sm">
+      <header className="sticky top-0 z-20 w-full shrink-0 border-b border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
@@ -160,7 +160,7 @@ const MainLayout = ({ children }) => {
         {
           sidebarOpen && (
             <div
-              className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+              className="fixed inset-0 z-40 bg-black/40 lg:hidden"
               onClick={() => setSidebarOpen(false)}
             ></div>
 
@@ -174,11 +174,10 @@ const MainLayout = ({ children }) => {
                          fixed
                          top-0
                          left-0
-                         z-40
+                         z-50
                          h-screen
                          w-64
                          bg-indigo-900
-                         pt-24
                          transform
                          transition-transform
                          duration-300
@@ -189,7 +188,6 @@ const MainLayout = ({ children }) => {
                          lg:static
                          lg:h-auto
                          lg:translate-x-0
-                         lg:pt-0
                          `}
 
         >
