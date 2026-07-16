@@ -20,9 +20,11 @@ const api = BaseAPIcaller();
 
 
 function ResetPass() {
-      const {token} = useParams();
-      const url = `https://hrms-project-backend-gijz.onrender.com/hrms/authentication/reset-password/${token}`
-
+      let {token} = useParams();
+      const trimmedToken = token ? token.trim() : '';
+      const url = `https://hrms-project-backend-gijz.onrender.com/hrms/authentication/reset-password/${trimmedToken}`
+// 
+// http://localhost:4000/hrms/authentication/reset-password/${token}
 
       const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -88,15 +90,19 @@ function ResetPass() {
              const data = await response.json();
      
              if (!response.ok) {
-               setServerError(data.message || 'Unable to update password');
+               const errMsg = data.message || data.error || 'Unable to update password';
+               setServerError(errMsg);
+               alert(errMsg);
                return;
              }
-              alert(data.message)
+              alert(data.message || 'Password updated successfully.');
               navigate('/')
-    
-           } catch (error) {
-             setServerError(error.message || 'Login request failed.');
-           }
+     
+            } catch (error) {
+              const errMsg = error.message || 'Reset password request failed.';
+              setServerError(errMsg);
+              alert(errMsg);
+            }
          }
      
          Reset_pass();

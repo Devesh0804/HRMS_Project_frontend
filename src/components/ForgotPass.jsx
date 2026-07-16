@@ -61,20 +61,24 @@ const ForgotPass = () => {
           },
           body: JSON.stringify({
             useremail: formData.useremail,
-          
           })
         });
 
         const data = await response.json();
-        alert(data.message)
-        navigate('/')
-          
+        
         if (!response.ok) {
-          setServerError(data.message || 'Check email');
+          const errMsg = data.message || data.error || 'Check email';
+          setServerError(errMsg);
+          alert(errMsg);
           return;
         }
+
+        alert(data.message || 'Reset link sent successfully.');
+        navigate('/');
       } catch (error) {
-        setServerError(error.message || 'forgot password request failed.');
+        const errMsg = error.message || 'forgot password request failed.';
+        setServerError(errMsg);
+        alert(errMsg);
       }
     }
   Forgot_Pass();
