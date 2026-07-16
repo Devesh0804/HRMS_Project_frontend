@@ -33,6 +33,8 @@ import Gate2Page from './pages/superadmin/gate/Gate2Page';
 import Gate3Page from './pages/superadmin/gate/Gate3Page';
 import ViewAdminPage from './pages/superadmin/admin/ViewAdminPage';
 import AdminActionPage from './pages/superadmin/admin/AdminActionPage';
+import ForgotPass from './components/ForgotPass';
+import ResetPass from './components/ResetPass';
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
         {/* Single Login Route */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path='/forgot_pass'element={<ForgotPass/>}/>
+        <Route path='/reset-pass/:token' element={<ResetPass/>}/>
 
         {/* Dashboards */}
         <Route path="/dashboard" element={<Dashboard />} />

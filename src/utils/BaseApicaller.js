@@ -4,7 +4,7 @@
 const BaseAPIcaller = ()=>{
    
 
-// http://localhost:4000/hrms/
+//     http://localhost:4000/hrms/
         const BaseRoute="https://hrms-project-backend-gijz.onrender.com/hrms/";
 
 
@@ -35,7 +35,9 @@ const BaseAPIcaller = ()=>{
                 SEARCHBYID:"searchById",
                 GETDATA:"getData",
                 LOGIN:"login",
-                REGISTER:"register"
+                REGISTER:"register",
+                FORGOT_PASS:"forgot_pass",
+                RESET_PASS:"reset-password"
         }
      
         const geturl = (module,operations,id)=>{
