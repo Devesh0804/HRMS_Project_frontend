@@ -8,6 +8,8 @@ import { setAuthSession } from '../utils/authSession';
 
 const api = BaseAPIcaller();
 const url = api.geturl(api.MODULE.AUTHENTICATION, api.OPERATIONS.LOGIN)
+console.log(url);
+
 
 
 
@@ -21,6 +23,8 @@ const Login = () => {
   const [serverError, setServerError] = useState('');
 
   const handleChange = (e) => {
+    console.log(e.target.value);
+    
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
