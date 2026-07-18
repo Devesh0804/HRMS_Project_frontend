@@ -213,12 +213,12 @@ const EmployeeForm = ({
 
     if (!formData.gender) newErrors.gender = 'Gender is required.';
     if (!formData.DOB) newErrors.dateOfBirth = 'Date of birth is required.';
-    // if (!formData.address.CityName) newErrors.city = 'City is required.';
-    // if (!formData.address.StateName) newErrors.state = 'State is required.';
-    // if (!formData.address.CountryName) newErrors.country = 'Country is required.';
+    if (!formData.address.CityName) newErrors.city = 'City is required.';
+    if (!formData.address.StateName) newErrors.state = 'State is required.';
+    if (!formData.address.CountryName) newErrors.country = 'Country is required.';
     if (!formData.Documents.Marks_10th) newErrors.tenthDocument = '10th document is required.';
     if (!formData.Documents.Marks_12th) newErrors.twelfthDocument = '12th document is required.';
-    // if (!formData.Documents.UG_qualifications) newErrors.ugDocument = 'UG document is required.';
+    if (!formData.Documents.UG_qualifications) newErrors.ugDocument = 'UG document is required.';
     // if (!formData.Documents.PG_qualifications) newErrors.pgDocument = 'PG document is required.';
     if (!formData.BankDetails.bankname.trim()) newErrors.bankName = 'Bank name is required.';
     if (!formData.BankDetails.ifsccode.trim()) newErrors.ifscCode = 'IFSC code is required.';
@@ -314,7 +314,11 @@ const EmployeeForm = ({
       const message = await handleApiResponse(response);
       console.log(message);
       
-      alert(message)
+
+      if(response.ok){
+         alert(' message.message || data saved successfully')
+      }
+      
       navigate(redirectPath)
 
 
@@ -362,15 +366,19 @@ const EmployeeForm = ({
 
       // Build a map from state name to its city list.
       // This allows us to show only the cities for the selected state.
+      
       data.forEach((country,index)=>{
         country.states.forEach((state,index)=>{
              
-            allstates.push(state.name);
-            const stateCities = state.cities.map((city)=>city.name);
-            stateCityMap[state.name] = stateCities;
-            allCities.push(...stateCities);
+            allstates.push(state.name); /* in this all states are stored */
+            const stateCities = state.cities.map((city)=>city.name);/* in this the array stored of all cites in that states
+              eg: gujrat has 300 cites then all 300 cities are stored in this array */
+            stateCityMap[state.name] = stateCities;/*stateCityMap it is an object where value stored like Gujrat :[ all cities of gujrat ] */
+            allCities.push(...stateCities);/* in this all cities stored in single array */
         })
       })
+     
+      
       setStateOptions(allstates);
       setAllCitiesByState(stateCityMap);
       setcityOptions(allCities);

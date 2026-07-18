@@ -68,6 +68,7 @@ const ViewEmployee = () => {
   };
 
   //http://localhost:4000/hrms/user/deleteById/${id}
+  // https://hrms-project-backend-gijz.onrender.com/hrms/user/deleteById/${id}
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {

@@ -43,7 +43,7 @@ const AttendanceButton = () => {
       async function fetchLocation() {
       try {
         const location = await getLocation()
-        console.log(location.latitude , location.longitude);
+        // console.log(location.latitude , location.longitude);
         
        
         // console.log(location);
@@ -56,7 +56,7 @@ const AttendanceButton = () => {
    
       
       const formatted = now.toISOString()
-      console.log(formatted , typeof(formatted));
+      console.log(formatted  , typeof(formatted));  /*'2026-07-18T09:00:13.157'*/
       
     
       
@@ -76,33 +76,17 @@ const AttendanceButton = () => {
        
         const data = await handleApiResponse(response)
        console.log(data.success);
-       
-        
-        
-           
-    let nextDuty = false
-    let checkMessage;
-    if (data.success == false) {
-     
-     alert(data.message)
-    checkMessage = false
-    }else{
-      nextDuty = !isOnDuty;
-      setIsOnDuty(nextDuty);
-      if (nextDuty && _id) {
-        localStorage.setItem(`attendance-status-${_id}`, 'on');
-      }
-    }
 
-   
-
-
-    
-    // if (nextDuty) {
-    //   setStatusMessage('Your duty has started successfully');
-    // } else if(!checkMessage && !nextDuty){
-    //   setStatusMessage('');
-    // }
+       if(data.success){
+        setIsOnDuty(true);
+        setStatusMessage('Your duty has started successfully');
+       }else{
+        alert(data.message);
+        if(data.message === 'Attendance already marked for today'){
+          setIsOnDuty(true);
+          setStatusMessage('Attendance is already marked for today');
+        }
+       }
       } catch (error) {
         console.log(error);
          if(error){
@@ -110,33 +94,19 @@ const AttendanceButton = () => {
          }
       }
     }
-    
-
-    fetchLocation();
+   fetchLocation();
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
 
-    try {
-      const decoded = jwtDecode(token);
-      const savedStatus = localStorage.getItem(`attendance-status-${decoded._id}`);
-      if (savedStatus === 'on') {
-        setIsOnDuty(true);
-        setStatusMessage('Attendance is already on');
-      }
-    } catch (error) {
-      console.warn('Unable to read attendance state from localStorage', error);
-    }
-  }, [handleToggleDuty]);
-  
-
-
-  const checkAttendence = async()=>{
+    const checkAttendence = async()=>{
     try {
        const token = localStorage.getItem('token');
-        const decoded = jwtDecode(token)
+       if(!token) return;
+
+         
+        // https://hrms-project-backend-gijz.onrender.com/hrms/attendence/check-attendence
+        // http://localhost:4000/hrms/attendence/check-attendence
 
       const res = await fetch('https://hrms-project-backend-gijz.onrender.com/hrms/attendence/check-attendence',{
         method :'GET',    headers:{
@@ -145,19 +115,31 @@ const AttendanceButton = () => {
         }
       })
       const response = await res.json()
-      // console.log();
-            
+      
+      
+      if(response.marked){
+          setIsOnDuty(true)
+          setStatusMessage('Attendance is already marked for today')
+          
+      }
       
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       
     }
+}
+
+    checkAttendence()
+
+}, []);
+
+
+
+  
   
     
-  }
-  useEffect(()=>{
-     checkAttendence()
-  },[])
+  
+
   const buttonLabel = isOnDuty ? 'Attendence Pending' : 'OFF DUTY';
   const buttonColor = isOnDuty ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700';
 
@@ -178,6 +160,5 @@ const AttendanceButton = () => {
       <p className="mt-3 text-sm text-indigo-600">{statusMessage}</p>
     </div>
   );
-};
-
+}
 export default AttendanceButton;
