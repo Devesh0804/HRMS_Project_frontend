@@ -16,6 +16,7 @@ function ViewDepartmentPage() {
 // ];
 
 const [departmentList , setDepartmentList] = useState([]);
+const [deletingId, setDeletingId] = useState('');
 
 useEffect(()=>{
     let departmentlist =[]
@@ -62,8 +63,10 @@ useEffect(()=>{
   };
 
   const handleDelete = async (id) => {
+    if (deletingId) return;
     if (window.confirm('Are you sure you want to delete this department?')) {
       try {
+        setDeletingId(id);
         const token = localStorage.getItem('token');
         const response = await fetch(delete_dept_url(id), {
           method: 'DELETE',
@@ -77,6 +80,8 @@ useEffect(()=>{
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setDeletingId('');
       }
     }
   };
@@ -155,9 +160,10 @@ useEffect(()=>{
                           <button
                             type="button"
                             onClick={() => handleDelete(department._id)}
-                            className="rounded-md bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700"
+                            disabled={deletingId === department._id}
+                            className="rounded-md bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-rose-300"
                           >
-                            Delete
+                            {deletingId === department._id ? 'Deleting...' : 'Delete'}
                           </button>
                         </div>
                       </td>

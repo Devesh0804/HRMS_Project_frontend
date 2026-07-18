@@ -102,6 +102,7 @@ const EmployeeForm = ({
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
      const [showPass, setShowPass] = useState(false);
+     const [isSubmitting, setIsSubmitting] = useState(false);
      const navigate = useNavigate();
 
 
@@ -242,6 +243,7 @@ const EmployeeForm = ({
  
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     
    
     const validationErrors = validateForm();
@@ -286,20 +288,8 @@ const EmployeeForm = ({
     formDataToSend.append('Documents.PG_qualifications', formData.Documents.PG_qualifications || '');
     formDataToSend.append('BankDetails.passbook_checkImg', formData.BankDetails.passbook_checkImg || '');
 
-    console.log(`${entityLabel} details saved locally:`);
-
-    setSuccessMessage(`${entityLabel} details were captured successfully.`);
-    setErrors({});
-    if (showLauncher) {
-      setShowForm(false);
-    } 
-  
-    setFormData(createInitialFormData(roleName));
-  
-  
-    
-    
     try {
+      setIsSubmitting(true);
         
         
       // Include Content-Type so backend's express.json() can parse the body.
@@ -317,16 +307,22 @@ const EmployeeForm = ({
 
       if(response.ok){
          alert(' message.message || data saved successfully')
+         setSuccessMessage(`${entityLabel} details were captured successfully.`);
+         setErrors({});
+         if (showLauncher) {
+           setShowForm(false);
+         }
+         setFormData(createInitialFormData(roleName));
+         navigate(redirectPath)
+      } else {
+        alert(message.message || `${entityLabel} save failed.`);
       }
-      
-      navigate(redirectPath)
-
-
-
 
     } catch (error) {
       console.log(error);
-
+      alert(`${entityLabel} save failed.`);
+    } finally {
+      setIsSubmitting(false);
     }
 
 
@@ -930,13 +926,15 @@ const EmployeeForm = ({
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="submit"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition"
+              disabled={isSubmitting}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold transition disabled:cursor-not-allowed disabled:bg-indigo-400"
             >
-              {submitLabel}
+              {isSubmitting ? 'Saving...' : submitLabel}
             </button>
             <button
               type="button"
               onClick={handleCancel}
+              disabled={isSubmitting}
               className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition"
             >
               Cancel

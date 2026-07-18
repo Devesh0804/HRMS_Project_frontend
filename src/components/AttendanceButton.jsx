@@ -13,8 +13,10 @@ const AttendanceButton = () => {
   const [Location , setLocation] = useState({})
   // Track the success message shown to the user
   const [statusMessage, setStatusMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleToggleDuty = () => {
+    if (isSubmitting || isOnDuty) return;
 
    
 
@@ -42,6 +44,8 @@ const AttendanceButton = () => {
 
       async function fetchLocation() {
       try {
+        setIsSubmitting(true);
+        setStatusMessage('Verifying attendance...');
         const location = await getLocation()
         // console.log(location.latitude , location.longitude);
         
@@ -92,6 +96,8 @@ const AttendanceButton = () => {
          if(error){
           alert('Enable your location');
          }
+      } finally {
+        setIsSubmitting(false);
       }
     }
    fetchLocation();
@@ -140,8 +146,8 @@ const AttendanceButton = () => {
     
   
 
-  const buttonLabel = isOnDuty ? 'Attendence Pending' : 'OFF DUTY';
-  const buttonColor = isOnDuty ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700';
+  const buttonLabel = isSubmitting ? 'Verifying...' : isOnDuty ? 'Attendence Pending' : 'OFF DUTY';
+  const buttonColor = isOnDuty || isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700';
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full min-h-200px flex flex-col items-center justify-center">
@@ -151,7 +157,7 @@ const AttendanceButton = () => {
         type="button"
         onClick={handleToggleDuty}
         className={`w-full max-w-sm rounded-xl px-6 py-4 mb-4 text-white text-basefont-semibold transition duration-200 ease-in-out ${buttonColor} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300`}
-        disabled ={isOnDuty ? true : false}
+        disabled ={isOnDuty || isSubmitting}
      >
         {buttonLabel}
       </button>

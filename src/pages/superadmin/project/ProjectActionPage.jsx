@@ -78,6 +78,7 @@ function ProjectActionPage({ mode = 'view' }) {
   const [initialFormData, setInitialFormData] = useState(createInitialFormData);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
@@ -140,6 +141,7 @@ function ProjectActionPage({ mode = 'view' }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     setMessage('');
 
     if (JSON.stringify(formData) === JSON.stringify(initialFormData)) {
@@ -148,6 +150,7 @@ function ProjectActionPage({ mode = 'view' }) {
     }
 
     try {
+      setIsSubmitting(true);
       const api = BaseAPIcaller();
       const token = localStorage.getItem('token');
       const response = await fetch(api.geturl(api.MODULE.PROJECT, api.OPERATIONS.UPDATE, id), {
@@ -169,6 +172,8 @@ function ProjectActionPage({ mode = 'view' }) {
     } catch (error) {
       console.log(error);
       setMessage('Project update failed.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -232,10 +237,11 @@ function ProjectActionPage({ mode = 'view' }) {
                   </div>
                 ) : (
                   <FormActions
-                    submitLabel="Save Project"
+                    submitLabel={isSubmitting ? 'Saving...' : 'Save Project'}
                     resetLabel="Back"
                     onSubmit={handleSubmit}
                     onReset={() => navigate('/superadmin/project/view')}
+                    submitDisabled={isSubmitting}
                   />
                 )}
 

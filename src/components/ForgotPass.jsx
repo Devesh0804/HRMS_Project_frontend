@@ -17,6 +17,7 @@ const ForgotPass = () => {
   });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,6 +45,7 @@ const ForgotPass = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -54,6 +56,8 @@ const ForgotPass = () => {
 
     async function Forgot_Pass() {
       try {
+        setIsSubmitting(true);
+        setServerError('');
         const response = await fetch(url, {
           method: 'POST',
           headers: {
@@ -79,6 +83,8 @@ const ForgotPass = () => {
         const errMsg = error.message || 'forgot password request failed.';
         setServerError(errMsg);
         alert(errMsg);
+      } finally {
+        setIsSubmitting(false);
       }
     }
   Forgot_Pass();
@@ -135,9 +141,10 @@ const ForgotPass = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg"
+                disabled={isSubmitting}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg disabled:cursor-not-allowed disabled:bg-indigo-400"
               >
-                Next
+                {isSubmitting ? 'Sending...' : 'Next'}
               </button>
             </div>
             {serverError && (

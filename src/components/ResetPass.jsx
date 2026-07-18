@@ -33,6 +33,7 @@ function ResetPass() {
   });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,6 +68,7 @@ function ResetPass() {
     
      const handleSubmit = (e) => {
          e.preventDefault();
+         if (isSubmitting) return;
          const validationErrors = validateForm();
          if (Object.keys(validationErrors).length > 0) {
            setErrors(validationErrors);
@@ -77,6 +79,8 @@ function ResetPass() {
      
          async function Reset_pass() {
            try {
+             setIsSubmitting(true);
+             setServerError('');
              const response = await fetch(url, {
                method: 'POST',
                headers: {
@@ -102,6 +106,8 @@ function ResetPass() {
               const errMsg = error.message || 'Reset password request failed.';
               setServerError(errMsg);
               alert(errMsg);
+            } finally {
+              setIsSubmitting(false);
             }
          }
      
@@ -167,9 +173,10 @@ function ResetPass() {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg"
+                disabled={isSubmitting}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg disabled:cursor-not-allowed disabled:bg-indigo-400"
               >
-                Next
+                {isSubmitting ? 'Updating...' : 'Next'}
               </button>
             </div>
             {/* {serverError && (

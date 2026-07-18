@@ -39,6 +39,7 @@ function DepartmentActionPage({ mode = 'view' }) {
   const [initialFormData, setInitialFormData] = useState(createInitialFormData);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
@@ -114,6 +115,7 @@ function DepartmentActionPage({ mode = 'view' }) {
 //Submit handler
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     setMessage('');
 
     if (JSON.stringify(formData) === JSON.stringify(initialFormData)) {
@@ -122,6 +124,7 @@ function DepartmentActionPage({ mode = 'view' }) {
     }
 
     try {
+      setIsSubmitting(true);
       const api = BaseAPIcaller();
       const token = localStorage.getItem('token');
       const response = await fetch(api.geturl(api.MODULE.DEPARTMENT, api.OPERATIONS.UPDATE, id), {
@@ -143,6 +146,8 @@ function DepartmentActionPage({ mode = 'view' }) {
     } catch (error) {
       console.log(error);
       setMessage('Department update failed.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -219,10 +224,11 @@ function DepartmentActionPage({ mode = 'view' }) {
                   </div>
                 ) : (
                   <FormActions
-                    submitLabel="Save Department"
+                    submitLabel={isSubmitting ? 'Saving...' : 'Save Department'}
                     resetLabel="Back"
                     onSubmit={handleSubmit}
                     onReset={() => navigate('/superadmin/department/view')}
+                    submitDisabled={isSubmitting}
                   />
                 )}
 

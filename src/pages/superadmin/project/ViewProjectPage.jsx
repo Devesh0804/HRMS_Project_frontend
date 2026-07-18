@@ -10,6 +10,7 @@ const deleteProjectUrl = (id) => api.geturl(api.MODULE.PROJECT, 'deleteById', id
 function ViewProjectPage() {
   const navigate = useNavigate();
   const [projectList, setProjectList] = useState([]);
+  const [deletingId, setDeletingId] = useState('');
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
@@ -47,8 +48,10 @@ function ViewProjectPage() {
   };
 
   const handleDelete = async (id) => {
+    if (deletingId) return;
     if (window.confirm('Are you sure you want to delete this project?')) {
       try {
+        setDeletingId(id);
         const token = localStorage.getItem('token');
         const response = await fetch(deleteProjectUrl(id), {
           method: 'DELETE',
@@ -62,6 +65,8 @@ function ViewProjectPage() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setDeletingId('');
       }
     }
   };
@@ -145,9 +150,10 @@ function ViewProjectPage() {
                           <button
                             type="button"
                             onClick={() => handleDelete(project._id)}
-                            className="rounded-md bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700"
+                            disabled={deletingId === project._id}
+                            className="rounded-md bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-rose-300"
                           >
-                            Delete
+                            {deletingId === project._id ? 'Deleting...' : 'Delete'}
                           </button>
                         </div>
                       </td>

@@ -21,6 +21,7 @@ const Register = () => {
   });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,6 +73,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     console.log(formData);
     
     const validationErrors = validateForm();
@@ -81,6 +83,8 @@ const Register = () => {
     }
 
     try {
+      setIsSubmitting(true);
+      setServerError('');
       const token = localStorage.getItem('token');
       const response = await fetch(url, {
         method: 'POST',
@@ -109,6 +113,8 @@ const Register = () => {
       navigate('/login');
     } catch (error) {
       setServerError(error.message || 'Registration request failed.');
+    } finally {
+      setIsSubmitting(false);
     }
 
     // // For now, just log the data
@@ -223,9 +229,10 @@ const Register = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg"
+                disabled={isSubmitting}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg disabled:cursor-not-allowed disabled:bg-indigo-400"
               >
-                Register
+                {isSubmitting ? 'Registering...' : 'Register'}
               </button>
             </div>
             {serverError && (

@@ -91,6 +91,7 @@ function ClientActionPage({ mode = 'view' }) {
   const [cityOptions, setCityOptions] = useState([]);
   const [allStatesByCountry, setAllStatesByCountry] = useState({});
   const [allCitiesByState, setAllCitiesByState] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
@@ -226,6 +227,7 @@ function ClientActionPage({ mode = 'view' }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     setMessage('');
 
     if (JSON.stringify(formData) === JSON.stringify(initialFormData)) {
@@ -234,6 +236,7 @@ function ClientActionPage({ mode = 'view' }) {
     }
 
     try {
+      setIsSubmitting(true);
       const api = BaseAPIcaller();
       const token = localStorage.getItem('token');
       const response = await fetch(api.geturl(api.MODULE.CLIENT, api.OPERATIONS.UPDATE, id), {
@@ -255,6 +258,8 @@ function ClientActionPage({ mode = 'view' }) {
     } catch (error) {
       console.log(error);
       setMessage('Client update failed.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -327,10 +332,11 @@ function ClientActionPage({ mode = 'view' }) {
                   </div>
                 ) : (
                   <FormActions
-                    submitLabel="Save Client"
+                    submitLabel={isSubmitting ? 'Saving...' : 'Save Client'}
                     resetLabel="Back"
                     onSubmit={handleSubmit}
                     onReset={() => navigate('/superadmin/client/view')}
+                    submitDisabled={isSubmitting}
                   />
                 )}
 

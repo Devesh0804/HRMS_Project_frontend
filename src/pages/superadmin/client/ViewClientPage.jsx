@@ -16,6 +16,7 @@ const getClientPhone = (client) => client.phone || client.orgmobile || client.ow
 function ViewClientPage() {
   const navigate = useNavigate();
   const [clientList, setClientList] = useState([]);
+  const [deletingId, setDeletingId] = useState('');
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
@@ -53,8 +54,10 @@ function ViewClientPage() {
   };
 
   const handleDelete = async (id) => {
+    if (deletingId) return;
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
+        setDeletingId(id);
         const token = localStorage.getItem('token');
         const response = await fetch(deleteClientUrl(id), {
           method: 'DELETE',
@@ -68,6 +71,8 @@ function ViewClientPage() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setDeletingId('');
       }
     }
   };
@@ -151,9 +156,10 @@ function ViewClientPage() {
                           <button
                             type="button"
                             onClick={() => handleDelete(client._id)}
-                            className="rounded-md bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700"
+                            disabled={deletingId === client._id}
+                            className="rounded-md bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-rose-300"
                           >
-                            Delete
+                            {deletingId === client._id ? 'Deleting...' : 'Delete'}
                           </button>
                         </div>
                       </td>

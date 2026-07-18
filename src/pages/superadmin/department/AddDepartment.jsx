@@ -61,6 +61,7 @@ function AddDepartment() {
   const [formData, setFormData] = useState(() => createInitialFormData());
   const [errors, setErrors] = useState({});
   const [departments , setDepartMents] = useState();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(()=>{
 // const url = api.geturl(api.MODULE.DEPARTMENT,api.OPERATIONS.SAVE)
@@ -138,6 +139,7 @@ try {
 
   const handleSubmit = async(event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     const validationErrors = validateForm();
   console.log(validationErrors)
     if (Object.keys(validationErrors).length > 0) {
@@ -145,11 +147,8 @@ try {
       return;
     }
 
-    console.log('Department details saved locally:', formData);
-    alert('Department saved successfully!');
-    setFormData(createInitialFormData());
-    setErrors({});
     try {
+      setIsSubmitting(true);
       const token = localStorage.getItem('token');
       const response = await fetch(url,{
         method : 'POST',
@@ -161,9 +160,19 @@ try {
       })
       const message = await handleApiResponse(response);
       console.log(message);
+      if (message.success) {
+        alert('Department saved successfully!');
+        setFormData(createInitialFormData());
+        setErrors({});
+      } else {
+        alert(message.message || 'Department save failed.');
+      }
       
     } catch (error) {
       console.log(error);
+      alert('Department save failed.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -290,10 +299,11 @@ try {
               </div> */}
 
               <FormActions
-                submitLabel="Save Department"
+                submitLabel={isSubmitting ? 'Saving...' : 'Save Department'}
                 resetLabel="Reset"
                 onSubmit={handleSubmit}
                 onReset={handleReset}
+                submitDisabled={isSubmitting}
               />
             </form>
           </div>

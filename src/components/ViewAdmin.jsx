@@ -9,6 +9,7 @@ const ViewAdmin = () => {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deletingId, setDeletingId] = useState('');
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -62,8 +63,10 @@ const ViewAdmin = () => {
   };
 
   const handleDelete = async (id) => {
+    if (deletingId) return;
     if (window.confirm('Are you sure you want to delete this admin?')) {
       try {
+        setDeletingId(id);
         const api = BaseAPIcaller();
         const url = api.geturl(api.MODULE.USER, 'deleteById', id);
         const token = localStorage.getItem('token');
@@ -75,6 +78,8 @@ const ViewAdmin = () => {
         });
       } catch (error) {
         console.error('Error deleting admin:', error);
+      } finally {
+        setDeletingId('');
       }
 
       setAdmins(admins.filter((admin) => admin.id !== id));
@@ -163,9 +168,10 @@ const ViewAdmin = () => {
                         </button>
                         <button
                           onClick={() => handleDelete(admin.id)}
-                          className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium transition-colors"
+                          disabled={deletingId === admin.id}
+                          className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:text-slate-400"
                         >
-                          Delete
+                          {deletingId === admin.id ? 'Deleting...' : 'Delete'}
                         </button>
                       </div>
                     </td>

@@ -75,6 +75,7 @@ function AddClient() {
   const [cityOptions, setCityOptions] = useState([]);
   const [allStatesByCountry, setAllStatesByCountry] = useState({});
   const [allCitiesByState, setAllCitiesByState] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const loadClientCount = async () => {
@@ -201,6 +202,7 @@ function AddClient() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -209,6 +211,7 @@ function AddClient() {
     }
 
     try {
+      setIsSubmitting(true);
       const api = BaseAPIcaller();
       const token = localStorage.getItem('token');
       const response = await fetch(api.geturl(api.MODULE.CLIENT, api.OPERATIONS.SAVE), {
@@ -232,6 +235,8 @@ function AddClient() {
     } catch (error) {
       console.log(error);
       alert('Client save failed.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -409,10 +414,11 @@ function AddClient() {
               </div>
 
               <FormActions
-                submitLabel="Save Client"
+                submitLabel={isSubmitting ? 'Saving...' : 'Save Client'}
                 resetLabel="Reset"
                 onSubmit={handleSubmit}
                 onReset={handleReset}
+                submitDisabled={isSubmitting}
               />
             </form>
           </div>

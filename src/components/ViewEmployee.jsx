@@ -7,6 +7,7 @@ const ViewEmployee = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deletingId, setDeletingId] = useState('');
 
   // Fetch employee data from backend
   useEffect(() => {
@@ -70,8 +71,10 @@ const ViewEmployee = () => {
   //http://localhost:4000/hrms/user/deleteById/${id}
   // https://hrms-project-backend-gijz.onrender.com/hrms/user/deleteById/${id}
   const handleDelete = async (id) => {
+    if (deletingId) return;
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
+        setDeletingId(id);
         const token = localStorage.getItem('token');
         await fetch(`https://hrms-project-backend-gijz.onrender.com/hrms/user/deleteById/${id}`, {
           method: 'DELETE',
@@ -81,6 +84,8 @@ const ViewEmployee = () => {
         });
       } catch (error) {
         console.error('Error deleting employee:', error);
+      } finally {
+        setDeletingId('');
       }
 
       setEmployees(employees.filter(emp => emp.id !== id));
@@ -172,9 +177,10 @@ const ViewEmployee = () => {
                         </button>
                         <button
                           onClick={() => handleDelete(employee.id)}
-                          className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium transition-colors"
+                          disabled={deletingId === employee.id}
+                          className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:text-slate-400"
                         >
-                          Delete
+                          {deletingId === employee.id ? 'Deleting...' : 'Delete'}
                         </button>
                       </div>
                     </td>

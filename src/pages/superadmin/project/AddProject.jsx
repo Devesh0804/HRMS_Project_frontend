@@ -61,6 +61,7 @@ function AddProject() {
   const [errors, setErrors] = useState({});
   const [projectCount, setProjectCount] = useState(0);
   const [activeProjectCount, setActiveProjectCount] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const loadProjectCount = async () => {
@@ -121,6 +122,7 @@ function AddProject() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     const validationErrors = validateForm();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -129,6 +131,7 @@ function AddProject() {
     }
 
     try {
+      setIsSubmitting(true);
       const api = BaseAPIcaller();
       const token = localStorage.getItem('token');
       const response = await fetch(api.geturl(api.MODULE.PROJECT, api.OPERATIONS.SAVE), {
@@ -152,6 +155,8 @@ function AddProject() {
     } catch (error) {
       console.log(error);
       alert('Project save failed.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -293,10 +298,11 @@ function AddProject() {
               </div>
 
               <FormActions
-                submitLabel="Save Project"
+                submitLabel={isSubmitting ? 'Saving...' : 'Save Project'}
                 resetLabel="Reset"
                 onSubmit={handleSubmit}
                 onReset={handleReset}
+                submitDisabled={isSubmitting}
               />
             </form>
           </div>

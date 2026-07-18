@@ -21,6 +21,7 @@ const Login = () => {
   });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     console.log(e.target.value);
@@ -53,6 +54,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -63,6 +65,8 @@ const Login = () => {
 
     async function AuthUser() {
       try {
+        setIsSubmitting(true);
+        setServerError('');
         const response = await fetch(url, {
           method: 'POST',
           headers: {
@@ -104,6 +108,8 @@ const Login = () => {
         setServerError('Login failed: invalid response from server.');
       } catch (error) {
         setServerError(error.message || 'Login request failed.');
+      } finally {
+        setIsSubmitting(false);
       }
     }
 
@@ -185,9 +191,10 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg"
+                disabled={isSubmitting}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out shadow-lg disabled:cursor-not-allowed disabled:bg-indigo-400"
               >
-                Sign In
+                {isSubmitting ? 'Signing in...' : 'Sign In'}
               </button>
             </div>
             {serverError && (

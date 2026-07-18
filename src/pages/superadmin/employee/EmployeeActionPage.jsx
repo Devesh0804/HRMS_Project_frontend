@@ -134,6 +134,7 @@ function EmployeeActionPage({
   const [initialFormData, setInitialFormData] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -218,6 +219,7 @@ function EmployeeActionPage({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmitting) return;
     setMessage('');
 
     if (JSON.stringify(formData) === JSON.stringify(initialFormData)) {
@@ -226,6 +228,7 @@ function EmployeeActionPage({
     }
 
     try {
+      setIsSubmitting(true);
       const api = BaseAPIcaller();
       const token = localStorage.getItem('token');
       const response = await fetch(api.geturl(api.MODULE.USER, api.OPERATIONS.UPDATE, id), {
@@ -249,6 +252,8 @@ function EmployeeActionPage({
     } catch (error) {
       console.error(`Error updating ${entityLabel.toLowerCase()}:`, error);
       setMessage(`${entityLabel} update failed.`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -423,9 +428,10 @@ function EmployeeActionPage({
                 {!isViewMode && (
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700"
+                    disabled={isSubmitting}
+                    className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
                   >
-                    Save {entityLabel}
+                    {isSubmitting ? `Saving ${entityLabel}...` : `Save ${entityLabel}`}
                   </button>
                 )}
 

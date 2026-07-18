@@ -24,6 +24,7 @@ const SuperAdminNavbar = ({ onLogout }) => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -44,9 +45,11 @@ const SuperAdminNavbar = ({ onLogout }) => {
   const isGroupActive = (group) => group.links.some((link) => location.pathname === link.to);
  const [result ,setResult]= useState(false);
   const handleLogoutClick = async () => {
+    if (isLoggingOut) return;
     const token = localStorage.getItem('token');
 
     try {
+      setIsLoggingOut(true);
       await fetch('https://hrms-project-backend-gijz.onrender.com/hrms/authentication/logout', {
         method: 'POST',
         headers: {
@@ -162,9 +165,10 @@ const SuperAdminNavbar = ({ onLogout }) => {
               type="button"
               // onClick={onLogout}
               onClick={handleLogoutClick}
-              className="text-slate-600 hover:text-slate-900 px-3 py-2 text-sm font-medium"
+              disabled={isLoggingOut}
+              className="text-slate-600 hover:text-slate-900 px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:text-slate-400"
             >
-              Logout
+              {isLoggingOut ? 'Logging out...' : 'Logout'}
             </button>
           </div>
         </div>
